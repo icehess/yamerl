@@ -2719,11 +2719,12 @@ queue_block_scalar_token(Chars, Line, Col, Delta, Parser,
   chomp = Chomp, newline = Newline, line = Sc_Line, col = Sc_Col,
   endline = Endline, endcol = Endcol}) ->
     {Text, Endline1, Endcol1} = case Chomp of
-        strip                   -> {Output, Endline, Endcol};
-        clip when Output == ""  -> {Output, Endline, Endcol};
-        clip when Spaces == ""  -> {Output, Endline, Endcol};
-        clip                    -> {[$\n | Output], Endline + 1, 1};
-        keep                    -> {Spaces ++ Output, Line, 1}
+        strip                      -> {Output, Endline, Endcol};
+        clip when Output == ""     -> {Output, Endline, Endcol};
+        clip when Spaces == ""     -> {Output, Endline, Endcol};
+        clip                       -> {[$\n | Output], Endline + 1, 1};
+        keep when Style == folded  -> {Spaces ++ [$\n | Output], Endline + 1, 1};
+        keep                       -> {Spaces ++ Output, Line, 1}
     end,
     Token = #yamerl_scalar{
       style    = block,
